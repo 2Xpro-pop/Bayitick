@@ -135,6 +135,7 @@
                                 <TextBlock Text="{Binding Resource.Name}" />
                                 <NumericUpDown
                                     Grid.Column="1"
+                                    KeyDown="NumericUpDown_KeyDown"
                                     ValueChanged="NumericUpDown_ValueChanged"
                                     Value="{Binding Resource.Count}" />
                             </Grid>

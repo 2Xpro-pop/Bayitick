@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -27,21 +28,34 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
     private async void NumericUpDown_ValueChanged(object? sender, NumericUpDownValueChangedEventArgs e)
     {
-        ReceptVm.ResourcesUsed.OnNext(null);
-
         if (sender is not NumericUpDown numeric)
         {
             return;
         }
 
-        if(numeric.DataContext is ResourceVm resourceVm)
+        if (e.OldValue is null || e.NewValue is null)
         {
+            return;
+        }
+
+
+        if (numeric.DataContext is ResourceVm resourceVm)
+        {
+            var oldDoubleValue = (double)e.OldValue!;
+
+            if (Math.Abs(oldDoubleValue - resourceVm.Resource.Count) >= 0.001)
+            {
+                return;
+            }
+            resourceVm.Resource.Count = (double)e.NewValue;
             await using (var db = new AppDbContext())
             {
                 db.Update(resourceVm.Resource);
                 await db.SaveChangesAsync();
             }
             await UpdateDb();
+            e.Handled = true;
+            ReceptVm.ResourcesUsed.OnNext(null);
         }
     }
 
@@ -96,7 +110,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             await db.SaveChangesAsync();
         }
 
-        var vms = await db.Resources.ToListAsync();
+        var vms = await db.Resources.OrderBy(r => r.Name).ToListAsync();
 
         ViewModel.Resources.Clear();
         ViewModel.Resources.AddRange(vms.Select(x => new ResourceVm(x)));
@@ -135,7 +149,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         }
         await using var db2 = new AppDbContext();
 
-        var recepts = await db2.Recepts.Include(r => r.CountForRecepts).ThenInclude(c => c.Resource).ToArrayAsync();
+        var recepts = await db2.Recepts.OrderBy(r => r.Name).Include(r => r.CountForRecepts).ThenInclude(c => c.Resource).ToArrayAsync();
 
         ViewModel!.Recepts.Clear();
         ViewModel.Recepts.AddRange(recepts.Select(x => new ReceptVm(ViewModel!, x)));
@@ -144,17 +158,55 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
     private async void HiChanged(object? sender, Avalonia.Controls.NumericUpDownValueChangedEventArgs e)
     {
-        ReceptVm.ResourcesUsed.OnNext(null);
         if (sender is not NumericUpDown numeric)
+        {
+            return;
+        }
+
+        if(e.OldValue is null || e.NewValue is null)
         {
             return;
         }
 
         if (numeric.DataContext is ResourceCountForRecept resourceVm)
         {
+            var oldDoubleValue = (double)e.OldValue;
+
+            if (Math.Abs(oldDoubleValue - resourceVm.Count) >= 0.001)
+            {
+                return;
+            }
+            resourceVm.Count = (double)e.NewValue;
             await using (var db = new AppDbContext())
             {
                 db.Update(resourceVm);
+                await db.SaveChangesAsync();
+            }
+            await UpdateDb();
+            e.Handled = true;
+            ReceptVm.ResourcesUsed.OnNext(null);
+        }
+    }
+
+    private async void NumericUpDown_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
+    {
+        ReceptVm.ResourcesUsed.OnNext(null);
+
+        if (sender is not NumericUpDown numeric)
+        {
+            return;
+        }
+
+        if (e.Key != Avalonia.Input.Key.Enter)
+        {
+            return;
+        }
+
+        if (numeric.DataContext is ResourceVm resourceVm)
+        {
+            await using (var db = new AppDbContext())
+            {
+                db.Update(resourceVm.Resource);
                 await db.SaveChangesAsync();
             }
             await UpdateDb();
