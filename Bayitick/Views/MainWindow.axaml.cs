@@ -64,12 +64,12 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             },
             new()
             {
-                Name = "охднпюяш ",
+                Name = "охднпюяш",
                 Count = 100
             },
             new()
             {
-                Name = "йсйнкдш ",
+                Name = "йсйнкдш",
                 Count = 100
             },
             new()
