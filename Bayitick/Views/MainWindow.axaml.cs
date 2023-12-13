@@ -73,37 +73,37 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         {
             await db.Resources.AddRangeAsync(new()
             {
-                Name = "Õ≈√–€",
+                Name = "NIGERS",
                 Count = 100
             },
             new()
             {
-                Name = "œ»ƒŒ–¿—€",
+                Name = "PIDORS",
                 Count = 100
             },
             new()
             {
-                Name = " ” ŒÀƒ€",
+                Name = "KUKOLDS",
                 Count = 100
             },
             new()
             {
-                Name = "SIMP'€",
+                Name = "SIMPS",
                 Count = 100
             },
             new()
             {
-                Name = "œ≈“”ÿ¿–€",
+                Name = "PETUSHARS",
                 Count = 100
             },
             new()
             {
-                Name = "◊≈–Õ€≈",
+                Name = "CHERNYS",
                 Count = 100
             },
             new()
             {
-                Name = "Õ¿“”–¿À€",
+                Name = "NATURALES",
                 Count = 100
             });
 
