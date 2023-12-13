@@ -1,0 +1,149 @@
+<Window
+    x:Class="Bayitick.Views.MainWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:Bayitick.Models"
+    xmlns:vm="using:Bayitick.ViewModels"
+    Title="Bayitick"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:DataType="vm:MainWindowViewModel"
+    Background="Transparent"
+    ExtendClientAreaToDecorationsHint="True"
+    Icon="/Assets/avalonia-logo.ico"
+    TransparencyLevelHint="AcrylicBlur"
+    mc:Ignorable="d">
+
+    <Design.DataContext>
+        <!--
+            This only sets the DataContext for the previewer in an IDE,
+            to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs)
+        -->
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <Panel>
+        <ExperimentalAcrylicBorder IsHitTestVisible="False">
+            <ExperimentalAcrylicBorder.Material>
+                <ExperimentalAcrylicMaterial
+                    BackgroundSource="Digger"
+                    MaterialOpacity="0.05"
+                    TintColor="Black"
+                    TintOpacity=".4" />
+            </ExperimentalAcrylicBorder.Material>
+        </ExperimentalAcrylicBorder>
+
+        <TabControl>
+
+            <TabItem Padding="10" Header="Главное">
+                <Grid ColumnDefinitions="200,*">
+
+                    <StackPanel Spacing="10">
+                        <TextBlock
+                            FontSize="28"
+                            FontWeight="Bold"
+                            Text="Заказ:" />
+                        <TextBlock Text="{Binding TotalCost, StringFormat='Общая цена {0}'}" />
+                        <ListBox ItemsSource="{Binding Orders}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate DataType="models:Recept">
+                                    <StackPanel Orientation="Horizontal" Spacing="20">
+                                        <Path
+                                            Data="{StaticResource CoffeeIcon}"
+                                            Fill="White"
+                                            Stretch="Uniform" />
+                                        <TextBlock VerticalAlignment="Center" Text="{Binding Name}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </StackPanel>
+
+                    <ItemsControl Grid.Column="1" ItemsSource="{Binding Recepts}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="vm:ReceptVm">
+                                <Border
+                                    Width="250"
+                                    Height="64"
+                                    Padding="11"
+                                    Background="{Binding Background}"
+                                    CornerRadius="13">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <Path
+                                            Data="{StaticResource CoffeeIcon}"
+                                            Fill="White"
+                                            Stretch="Uniform" />
+                                        <TextBlock
+                                            Grid.Column="1"
+                                            Margin="10"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Center"
+                                            Text="{Binding Recept.Name}" />
+                                        <Button
+                                            Grid.Column="2"
+                                            HorizontalAlignment="Right"
+                                            Command="{Binding MakeOrderCommand}"
+                                            Content="Заказть" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                </Grid>
+            </TabItem>
+
+            <TabItem Padding="10" Header="Рецепты">
+                <ListBox ItemsSource="{Binding Recepts}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="vm:ReceptVm">
+                            <StackPanel>
+                                <TextBlock FontSize="21" Text="{Binding Recept.Name}" />
+                                <Border Padding="20">
+                                    <ListBox ItemsSource="{Binding Recept.CountForRecepts}">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate DataType="models:ResourceCountForRecept">
+                                                <Grid ColumnDefinitions="*, 140">
+                                                    <TextBlock Text="{Binding Resource.Name}" />
+                                                    <NumericUpDown
+                                                        Grid.Column="1"
+                                                        ValueChanged="HiChanged"
+                                                        Value="{Binding Count}" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </Border>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </TabItem>
+
+            <TabItem Padding="10" Header="Ресурсы">
+                <ListBox ItemsSource="{Binding Resources}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="vm:ResourceVm">
+                            <Grid ColumnDefinitions="*, 140">
+                                <TextBlock Text="{Binding Resource.Name}" />
+                                <NumericUpDown
+                                    Grid.Column="1"
+                                    ValueChanged="NumericUpDown_ValueChanged"
+                                    Value="{Binding Resource.Count}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </TabItem>
+        </TabControl>
+
+    </Panel>
+
+</Window>
