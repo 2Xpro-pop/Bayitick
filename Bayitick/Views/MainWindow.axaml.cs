@@ -117,8 +117,8 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
             await db.SaveChangesAsync();
 
-            var recept = await db.Recepts.FirstAsync();
-            var resource = await db.Resources.FirstAsync();
+            var recept = await db.Recepts.FirstAsync(x => x.Name == "À‡ÚÚÂ 0.5");
+            var resource = await db.Resources.FirstAsync(x => x.Name == "Õ≈√–€");
 
             var resourceCount = new ResourceCountForRecept()
             {
